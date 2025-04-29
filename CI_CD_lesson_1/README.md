@@ -5,14 +5,16 @@
 Настройки Jenkins Freestyle project для тестирования и сборки в docker image go-кода:
 
 ![Jenkins setting](https://github.com/DoctorZub/netology_homeworks/blob/main/img/Jenkins_setting.png)
+![Jenkins output](https://github.com/DoctorZub/netology_homeworks/blob/main/img/Output_Jenkins.png) 
+
+Проверяем фактическое создание docker image:
+![Go image](https://github.com/DoctorZub/netology_homeworks/blob/main/img/Go_image.png)
 
 ---
 
 ### Задание 2
 
-Ссылка на коммит с .gitignore:
-
-https://github.com/DoctorZub/hw_test/commit/cd9757ea5a58da9f8e50334e6d5df043674f79e3
+Код pipeline'a для тестирования и сборки docker image из go-кода:
 
 ```
 pipeline {
@@ -35,13 +37,19 @@ pipeline {
 }
 ```
 
+Pipeline успешно отработал, проверяем создание docker image:
+
+![Pipeline output](https://github.com/DoctorZub/netology_homeworks/blob/main/img/Pipeline_output.png)
+![Image from pipeline](https://github.com/DoctorZub/netology_homeworks/blob/main/img/Pipe_Go_image.png)
+
+
 ---
 
 ### Задание 3
 
-Ссылка на граф коммитов, где показан merge ветки dev в ветку main:
+На второй машине с IP 192.168.0.192 на порту 8081 развернул Nexus, создал raw-hosted репозиторий.
+Код pipeline'a Jenkins для сбоки бинарного файла go-кода и загрузки данного файла в репозиторий Nexus:
 
-https://github.com/DoctorZub/hw_test/network
 ```
 pipeline {
  agent any
@@ -62,3 +70,5 @@ pipeline {
  }
 }
 ```
+![Pipeline output](https://github.com/DoctorZub/netology_homeworks/blob/main/img/Out_my_pipe2.png)
+![Image from pipeline](https://github.com/DoctorZub/netology_homeworks/blob/main/img/repo.png)
