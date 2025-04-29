@@ -4,7 +4,7 @@
 
 Настройки Jenkins Freestyle project для тестирования и сборки в docker image go-кода:
 
-![Jenkins setting](https://github.com/DoctorZub/netology_homeworks/tree/main/Jenkins_setting.png)
+![Jenkins setting](https://github.com/DoctorZub/netology_homeworks/blob/main/img/Jenkins_setting.png)
 
 ---
 
