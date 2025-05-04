@@ -79,6 +79,6 @@ else:
 ### Задание 8
 
 Настройки и результат работы автообнаружения хостов в сети 192.168.0.0/24:
-![Discovery action](https://github.com/DoctorZub/netology_homeworks/blob/main/img/dsc_actions.png)
+![Discovery action](https://github.com/DoctorZub/netology_homeworks/blob/main/img/disc_actions.png)
 ![Discovery](https://github.com/DoctorZub/netology_homeworks/blob/main/img/disc.png)
 ![Discovety hosts](https://github.com/DoctorZub/netology_homeworks/blob/main/img/disc_hosts.png)
