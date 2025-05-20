@@ -5,10 +5,12 @@
 [Ссылка на pkt-файл](https://github.com/DoctorZub/netology_homeworks/blob/main/hsrp_advanced_zubkov.pkt)
 
 Настройка Router1 и Router2 (в своих CLI они называются Router0 и Router1 соответственно):
+
 ![R0](https://github.com/DoctorZub/netology_homeworks/blob/main/img/conf_Router0.png)
 ![R1](https://github.com/DoctorZub/netology_homeworks/blob/main/img/conf_Router1.png) 
 
 Также на Router1 был изменен приоритет и добавлен preempt:
+
 ![R0_priority](https://github.com/DoctorZub/netology_homeworks/blob/main/img/conf_priority_router0.png)
 
 После выполнения всех настроек данная схема работает таким образом, что все пакеты от клиента к веб-серверу и обратно проходят через Router1. 
@@ -41,6 +43,7 @@ check
 Конфигурационные файлы keepalived для двух VM's:
 
 Для VM1
+
 ```
 vrrp_script check_web {
   script       "/etc/nginx/bash_keep.sh"
@@ -66,6 +69,7 @@ vrrp_instance VI_1 {
 ```
 
 Для VM2
+
 ```
 vrrp_script check_web {
   script       "/etc/nginx/bash_keep.sh"
@@ -93,11 +97,13 @@ vrrp_instance VI_1 {
 
 Далее на скриншотах представлены приветственные страницы сервера Nginx для VM1 IP 192.168.0.108(MASTER) и VM2 IP 192.168.0.192(BACKUP). 
 А также результат обращения к адресу 192.168.0.111 - мы увидим страницу с VM1, т.к. всё в работе и плавающий адрес будет присвоен MASTER VM.
+
 ![VM1](https://github.com/DoctorZub/netology_homeworks/blob/main/img/VM1.png)
 ![VM2](https://github.com/DoctorZub/netology_homeworks/blob/main/img/VM2.png)
 ![111](https://github.com/DoctorZub/netology_homeworks/blob/main/img/111.png)
 
 Далее удалим файл index.html для сервера Nginx VM1 и сможем увидить как адрес 192.168.0.111 присвоится VM2
+
 ![VM1_without_index](https://github.com/DoctorZub/netology_homeworks/blob/main/img/VM1_without_index.png)
 ![111](https://github.com/DoctorZub/netology_homeworks/blob/main/img/111_VM2.png)
 
