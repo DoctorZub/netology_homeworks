@@ -2,7 +2,7 @@
 
 ### Задание 1
 
-[Ссылка на pkt-файл]()
+[Ссылка на pkt-файл](https://github.com/DoctorZub/netology_homeworks/blob/main/hsrp_advanced_zubkov.pkt)
 
 Настройка Router1 и Router2 (в своих CLI они называются Router0 и Router1 соответственно):
 ![R0](https://github.com/DoctorZub/netology_homeworks/blob/main/img/conf_Router0.png)
