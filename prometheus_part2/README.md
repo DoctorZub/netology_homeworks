@@ -16,3 +16,4 @@
 ### Задание 3
 
 ![Docker metrics](https://github.com/DoctorZub/netology_homeworks/blob/main/img/prom_docker_metrics.png)
+![Docker target](https://github.com/DoctorZub/netology_homeworks/blob/main/img/prom_targets_docker.png)
