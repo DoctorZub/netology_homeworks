@@ -30,6 +30,7 @@ Config HAProxy для балансировки нагрузки между эт�
 [haproxy.conf](https://github.com/DoctorZub/netology_homeworks/blob/main/klasters-balansing/haproxy_configs/haproxy_2.conf)
 
 HAproxy настроен так, что он балансирует только тот http-трафик, который адресован домену example.local
+
 Демонстрация работы:
 
 ![Демонстрация работы HAProxy](https://github.com/DoctorZub/netology_homeworks/blob/main/img/haproxy_local.png)
