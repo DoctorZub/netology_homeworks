@@ -140,4 +140,6 @@ HAproxy настроен так, что он балансирует только
 
 ![Без указания домена](https://github.com/DoctorZub/netology_homeworks/blob/main/img/haproxy_without.png)
 
+![Stats](https://github.com/DoctorZub/netology_homeworks/blob/main/img/haproxy_stats2.png)
+
 ---
