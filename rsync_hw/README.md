@@ -1,42 +1,37 @@
-# Домашнее задание к занятию "Кластеризация и балансировка нагрузки" - `Zubkov Danil`
+# Домашнее задание к занятию "Резервное копирование" - `Zubkov Danil`
 
 ### Задание 1
 
-На локальной машине были запущены 2 простых Python сервера:
-Server 1 - localhost:1234
-Server 2 - localhost:9876
+Команда rsync, которая будет создавать зеркальную копию домашней директории пользователя в директорию /tmp/backup, исключающая из синхронизации все директории, начинающиеся с точки, и подсчитывающая хэш-суммы для всех файлов - выглядит следующим образом:
 
-Config HAProxy для балансировки нагрузки между этими 2-мя серверами на 4 уровне выглядит следующим образом:
-[haproxy.conf](https://github.com/DoctorZub/netology_homeworks/blob/main/klasters-balansing/haproxy_configs/haproxy_1.conf)
+![Rsync_1](https://github.com/DoctorZub/netology_homeworks/blob/main/img/rsync_1.png)
+![Rsync_2](https://github.com/DoctorZub/netology_homeworks/blob/main/img/rsync_2.png)
 
-Демонстрация работы:
+Можно проверить работу команды - убедимся, что в домашней директории пользователя имеются скрытые файлы:
 
-![Демонстрация работы HAProxy](https://github.com/DoctorZub/netology_homeworks/blob/main/img/haproxy_working.png)
+![Hidden](https://github.com/DoctorZub/netology_homeworks/blob/main/img/skrit.png)
 
-![HAProxy stats](https://github.com/DoctorZub/netology_homeworks/blob/main/img/haproxy_stats.png)
+А в созданной резервной копии такие файлы отсутствуют:
+
+![Not_hidden](https://github.com/DoctorZub/netology_homeworks/blob/main/img/net_skrit.png)
 
 ---
 
 ### Задание 2
 
-На локальной машине были запущены 3 простых Python сервера:
-Server 1 - localhost:1234
-Server 2 - localhost:9876
-Server 3 - localhost:3333
+Скрипт, который будет создавать зеркальную резервную копию домашней директории пользователя и писать сообщения в системный лог - [rsync.sh](https://github.com/DoctorZub/netology_homeworks/blob/main/rsync_hw/rsync.sh)
 
-
-Config HAProxy для балансировки нагрузки между этими 3-мя серверами на 7 уровне по алгоритму Weighted Round Robin (где перый сервер имеет вес - 2, второй - 3, третий - 4)
-выглядит следующим образом:
-[haproxy.conf](https://github.com/DoctorZub/netology_homeworks/blob/main/klasters-balansing/haproxy_configs/haproxy_2.conf)
-
-HAproxy настроен так, что он балансирует только тот http-трафик, который адресован домену example.local
+Настройка cron производилась с помощью команды *sudo crontab -e*, чтобы запланированные задачи выполнялись от имени root'a и имелся доступ к системному логу. Файл с задачами cron - [crontab](https://github.com/DoctorZub/netology_homeworks/blob/main/rsync_hw/crontab)
+Задача в данном файле запускается каждый день в 19:37 и вызывает скрипт rsync.sh
 
 Демонстрация работы:
 
-![Демонстрация работы HAProxy](https://github.com/DoctorZub/netology_homeworks/blob/main/img/haproxy_local.png)
+Созданная резервная копия по адресу /tmp/backup в 19:37:
 
-![Без указания домена](https://github.com/DoctorZub/netology_homeworks/blob/main/img/haproxy_without.png)
+![Созданная копия](https://github.com/DoctorZub/netology_homeworks/blob/main/img/cron_script.png)
 
-![Stats](https://github.com/DoctorZub/netology_homeworks/blob/main/img/haproxy_stats2.png)
+Сообщение в системном логе:
+
+![Лог](https://github.com/DoctorZub/netology_homeworks/blob/main/img/cron_log.png)
 
 ---
