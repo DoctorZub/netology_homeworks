@@ -1,42 +1,26 @@
-# Домашнее задание к занятию "Кластеризация и балансировка нагрузки" - `Zubkov Danil`
+# Домашнее задание к занятию "Отказоустойчивость в облаке" - `Zubkov Danil`
 
 ### Задание 1
+[Ссылка на конфигурацию Terraform](https://github.com/DoctorZub/netology_homeworks/tree/main/Otkaz_v_oblake/cloud)
 
-На локальной машине были запущены 2 простых Python сервера:
-Server 1 - localhost:1234
-Server 2 - localhost:9876
+Статус балансировщика и целевой группы:
 
-Config HAProxy для балансировки нагрузки между этими 2-мя серверами на 4 уровне выглядит следующим образом:
-[haproxy.conf](https://github.com/DoctorZub/netology_homeworks/blob/main/klasters-balansing/haproxy_configs/haproxy_1.conf)
+![Балансировщик и группа](https://github.com/DoctorZub/netology_homeworks/blob/main/img/Balancer.png)
 
-Демонстрация работы:
+На обе виртуальные машины был установлен сервер Nginx и настроена страница index.html, чтобы машины можно было отличать между собой.
+**Подлючимся на публичный адрес балансировщика через браузер:**
 
-![Демонстрация работы HAProxy](https://github.com/DoctorZub/netology_homeworks/blob/main/img/haproxy_working.png)
+![Балансировщик через браузер](https://github.com/DoctorZub/netology_homeworks/blob/main/img/balancer_nginx_1.png)
 
-![HAProxy stats](https://github.com/DoctorZub/netology_homeworks/blob/main/img/haproxy_stats.png)
-
----
-
-### Задание 2
-
-На локальной машине были запущены 3 простых Python сервера:
-Server 1 - localhost:1234
-Server 2 - localhost:9876
-Server 3 - localhost:3333
+При первом подлючении балансировщик направил наш трафик на vm1. При обновлении страницы нас не перебрасывает на vm0, видимо это изза уже установленной сессии с vm1.
 
 
-Config HAProxy для балансировки нагрузки между этими 3-мя серверами на 7 уровне по алгоритму Weighted Round Robin (где перый сервер имеет вес - 2, второй - 3, третий - 4)
-выглядит следующим образом:
-[haproxy.conf](https://github.com/DoctorZub/netology_homeworks/blob/main/klasters-balansing/haproxy_configs/haproxy_2.conf)
+**Подлючимся к балансировщику через curl:**
 
-HAproxy настроен так, что он балансирует только тот http-трафик, который адресован домену example.local
+![Балансировщик через curl](https://github.com/DoctorZub/netology_homeworks/blob/main/img/balancer_nginx.png)
 
-Демонстрация работы:
-
-![Демонстрация работы HAProxy](https://github.com/DoctorZub/netology_homeworks/blob/main/img/haproxy_local.png)
-
-![Без указания домена](https://github.com/DoctorZub/netology_homeworks/blob/main/img/haproxy_without.png)
-
-![Stats](https://github.com/DoctorZub/netology_homeworks/blob/main/img/haproxy_stats2.png)
+Можем наблюдать что балансировщик работает и при каждом забросе наш трафик перенаправляется на разные vm.
 
 ---
+
+
