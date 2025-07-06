@@ -33,7 +33,7 @@
 
 ### Решение 3
 
-(Nginx у меня не в docker-контейнере, а просто установлен на сервере)
+(Nginx у меня не в docker-контейнере, а просто установлен на сервере)<br>
 Для выполнения этого задания настроил конфиг Nginx таким образом, чтобы логи писались в файл access.log в директорию, где лежит [docker-compose](https://github.com/DoctorZub/netology_homeworks/blob/main/ELK/docker-compose-nginx.yml) и [pipeline](https://github.com/DoctorZub/netology_homeworks/blob/main/ELK/configs/logstash/pipelines/logs_nginx.conf) для logstash.
 
 Этот файл с логами прокидывается в контейнер logstash, logstash читает его и пересылает данные в elasticsearch.<br>
