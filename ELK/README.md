@@ -54,4 +54,4 @@
 [filebeat.yml](https://github.com/DoctorZub/netology_homeworks/blob/main/ELK/configs/filebeat/filebeat.yml)
 
 ![Nginx_kibana_fb](https://github.com/DoctorZub/netology_homeworks/blob/main/img/elk_ngnix_logs_fb.png)
-
+![Nginx_kibana_fb_close](https://github.com/DoctorZub/netology_homeworks/blob/main/img/elk_ngnix_logs_fb_close.png)
