@@ -50,8 +50,8 @@
 
 ### Решение 4
 
-[Docker-compose](https://github.com/DoctorZub/netology_homeworks/blob/main/ELK/docker-compose_fb.yml)
-[Pipeline_for_logstash](https://github.com/DoctorZub/netology_homeworks/blob/main/ELK/configs/logstash/pipelines/beat_nginx.conf)
+[Docker-compose](https://github.com/DoctorZub/netology_homeworks/blob/main/ELK/docker-compose_fb.yml)<br>
+[Pipeline_for_logstash](https://github.com/DoctorZub/netology_homeworks/blob/main/ELK/configs/logstash/pipelines/beat_nginx.conf)<br>
 [filebeat.yml](https://github.com/DoctorZub/netology_homeworks/blob/main/ELK/configs/filebeat/filebeat.yml)
 
 ![Nginx_kibana_fb](https://github.com/DoctorZub/netology_homeworks/blob/main/img/elk_ngnix_logs_fb.png)
