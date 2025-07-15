@@ -28,4 +28,6 @@
 
 Скриншот:
 
-![Sakila_table](https://github.com/DoctorZub/netology_homeworks/blob/main/img/mysql_sakila.png)
+![Sakila_table](https://github.com/DoctorZub/netology_homeworks/blob/main/img/sakila_table.png)
+
+---
