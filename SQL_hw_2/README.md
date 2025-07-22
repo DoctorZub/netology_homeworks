@@ -25,5 +25,31 @@ FROM customer
 GROUP BY store_id
 HAVING COUNT(store_id) > 300;
 ```
+---
 
+### Задание 2
+```
+SELECT COUNT(film_id) AS film_count
+FROM film
+WHERE length > (SELECT AVG(length) FROM film);
+```
+---
 
+### Задание 3
+```
+SELECT 
+    DATE_FORMAT(payment_date, '%Y-%m') AS month,
+    SUM(amount) AS total_payments,
+    COUNT(rental_id) AS rental_count
+FROM (
+    SELECT 
+        p.payment_date,
+        p.amount,
+        r.rental_id
+    FROM payment p
+    JOIN rental r ON p.rental_id = r.rental_id
+) AS sub
+GROUP BY month
+ORDER BY total_payments DESC
+LIMIT 1;
+```
