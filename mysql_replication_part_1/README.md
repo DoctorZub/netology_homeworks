@@ -1,47 +1,61 @@
-# Домашнее задание к занятию "Zabbix_part_1" - `Zubkov Danil`
+# Домашнее задание к занятию "Репликация и масштабирование. Часть 1" - `Zubkov Danil`
 
 ### Задание 1
+На лекции рассматривались режимы репликации master-slave, master-master, опишите их различия.
 
-Веб интерфейс Zabbix сервера на Apache2:
+### Решение 1
+**Master-slave:**<br>
+При данном типе репликации master-нода выступает "главной" нодой, на которую пользователи могу записывать данные, а также читать данные с нее. На slave-ноде располагается полная копия БД c master-ноды, но при этом со slave-ноды пользователи могут только считывать данные. Записать данные на slave-ноду и синхронизировать их на master-ноде в данном типе репликации не получится.
 
-![Zabbix_web](https://github.com/DoctorZub/netology_homeworks/blob/main/img/zabbix_web_gui.png) 
-
-Набор команд для загрузки Zabbix сервера на хост с OS Ubuntu, PostgreSQL, Apache2:
-*(все команды выполняются под sudo)*
-
-```
-apt install postgresql
-
-wget https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_6.0+ubuntu24.04_all.deb
-dpkg -i zabbix-release_latest_6.0+ubuntu24.04_all.deb
-apt update
-
-apt install zabbix-server-pgsql zabbix-frontend-php php8.3-pgsql zabbix-apache-conf zabbix-sql-scripts zabbix-agent
-
-sudo -u postgres createuser --pwprompt zabbix
-sudo -u postgres createdb -O zabbix zabbix
-
-zcat /usr/share/zabbix-sql-scripts/postgresql/server.sql.gz | sudo -u zabbix psql zabbix 
-
-Вписываем в файл /etc/zabbix/zabbix_server.conf пароль от базы данных
-DBPassword=password  
-
-systemctl restart zabbix-server zabbix-agent apache2
-systemctl enable zabbix-server zabbix-agent apache2
- 
-```
-
-### Задание 2
-Подключено 2 агента, один на Zabbix сервере, второй на другой машине с ОС Debian
-![Hosts](https://github.com/DoctorZub/netology_homeworks/blob/main/img/zabbix_hosts.png)
-
-Log file agent on Zabbix server
-![server_log](https://github.com/DoctorZub/netology_homeworks/blob/main/img/log_agent_server.png)
-
-Log file agent on Debian VM
-![server_log](https://github.com/DoctorZub/netology_homeworks/blob/main/img/log_agent_debian.png)
-
-Раздел Monitoring -> Latest Data, видно что данные поступают от обоих агентов
-![Latest_data](https://github.com/DoctorZub/netology_homeworks/blob/main/img/monitoring_data.png)
+**Master-master:**<br>
+Данный тип репликации отличается от предыдущего тем, что в данном случае обе ноды равноправны. Они обладают одинаковыми возможностями, на них можно писать и считывать с них данные. При этом данные будут копироваться с одной ноды на другую, и будут синхронизироваться полностью идентичные копии БД на каждой ноде.
 
 ---
+
+### Задание 2
+Выполните конфигурацию master-slave репликации, примером можно пользоваться из лекции.
+
+### Решение 2
+Итак буду поднимать и master, и slave ноды в docker-контейнерах с помощью [docker-compose.yml](https://github.com/DoctorZub/netology_homeworks/blob/main/mysql_replication_part_1/docker-compose.yml)<br>
+При создании контейнеров в них прокидываются конфиги БД и скрипты, которые будут выполнены сразу после создания.<br>
+**Для master:**<br> 
+В [master.sql](https://github.com/DoctorZub/netology_homeworks/blob/main/mysql_replication_part_1/master/master.sql) описан SQL скрипт по созданию пользователя, под которым slave-нода будет обращаться к master-ноде.<br>
+**Для slave:**<br>
+В конфиге [my.cnf](https://github.com/DoctorZub/netology_homeworks/blob/main/mysql_replication_part_1/slave/my.cnf) важным моментом является поле read_only=1 для правильной работы master-slave репликации.<br>
+В [slave.sql](https://github.com/DoctorZub/netology_homeworks/blob/main/mysql_replication_part_1/slave/slave.sql) описан SQL скрипт, в котором для slave-ноды указывается master, а также параметры пользователя, под которым slave-нода будет обращаться к master-ноде.<br>
+<br>
+Запускаем контейнеры:
+
+![Docker_containers](https://github.com/DoctorZub/netology_homeworks/blob/main/img/repl_docker.png)
+
+Подключаемся к БД с помощью программы DBeaver:
+
+![DBeaver](https://github.com/DoctorZub/netology_homeworks/blob/main/img/repl_databases.png)
+
+Проверим, что на master-ноде создался пользователь repl_Zubkov:
+
+![User](https://github.com/DoctorZub/netology_homeworks/blob/main/img/repl_master_users.png)
+
+Проверим состояние slave-ноды с помощью команды SHOW REPLICA SATUS:
+
+![Replica_status](https://github.com/DoctorZub/netology_homeworks/blob/main/img/repl_replica.png)
+
+С помощью графической оболочки создам на master-ноде БД test. Можно наблюдать, что такая же БД появилась и на slave-ноде:
+
+![Test_db](https://github.com/DoctorZub/netology_homeworks/blob/main/img/repl_testdb.png)
+
+Созданиим в этой БД на master-ноде таблицу master_test:
+
+![Master_table](https://github.com/DoctorZub/netology_homeworks/blob/main/img/repl_test_table.png)
+
+Можем наблюдать, что такая же таблица создалась и на slave-ноде:
+
+![Master_table_2](https://github.com/DoctorZub/netology_homeworks/blob/main/img/repl_test_table2.png)
+
+Чтобы не проводить наши тесты под root'ом, создадим на slave-ноде пользователя slave_user и выдадим ему правда на SELECT и CREATE. Переподключимся в БД под пользователем slave_user:
+
+![Slave_user](https://github.com/DoctorZub/netology_homeworks/blob/main/img/repl_newuser.png)
+
+После попытки создать чтонибудь на slave-ноде мы видим ошибку о том, что это невозможно так как наша нода работает в режиме read_only, т.е. так как мы ее и настраивали:
+
+![Read_only](https://github.com/DoctorZub/netology_homeworks/blob/main/img/repl_read_only.png)
