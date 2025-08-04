@@ -1,47 +1,54 @@
-# Домашнее задание к занятию "Zabbix_part_1" - `Zubkov Danil`
+# Домашнее задание к занятию "Репликация и масштабирование. Часть 2" - `Zubkov Danil`
 
 ### Задание 1
+Опишите основные преимущества использования масштабирования методами:
 
-Веб интерфейс Zabbix сервера на Apache2:
+активный master-сервер и пассивный репликационный slave-сервер;<br>
+master-сервер и несколько slave-серверов;
 
-![Zabbix_web](https://github.com/DoctorZub/netology_homeworks/blob/main/img/zabbix_web_gui.png) 
+### Решение 1
+- Масштабирование с активным master-сервером и пассивным slave-сервером обеспечивает высокую доступность и отказоустойчивость, так как при сбое master-сервера slave может взять на себя его функции. Это также позволяет разгрузить чтение данных, распределяя его между несколькими серверами.
 
-Набор команд для загрузки Zabbix сервера на хост с OS Ubuntu, PostgreSQL, Apache2:
-*(все команды выполняются под sudo)*
-
-```
-apt install postgresql
-
-wget https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_6.0+ubuntu24.04_all.deb
-dpkg -i zabbix-release_latest_6.0+ubuntu24.04_all.deb
-apt update
-
-apt install zabbix-server-pgsql zabbix-frontend-php php8.3-pgsql zabbix-apache-conf zabbix-sql-scripts zabbix-agent
-
-sudo -u postgres createuser --pwprompt zabbix
-sudo -u postgres createdb -O zabbix zabbix
-
-zcat /usr/share/zabbix-sql-scripts/postgresql/server.sql.gz | sudo -u zabbix psql zabbix 
-
-Вписываем в файл /etc/zabbix/zabbix_server.conf пароль от базы данных
-DBPassword=password  
-
-systemctl restart zabbix-server zabbix-agent apache2
-systemctl enable zabbix-server zabbix-agent apache2
- 
-```
+- Масштабирование с одним master-сервером и несколькими slave-серверами увеличивает пропускную способность системы за счет распределения запросов на чтение между несколькими slave-серверами. Это повышает производительность и снижает нагрузку на основной сервер, обеспечивая более эффективную работу при росте количества пользователей.
 
 ### Задание 2
-Подключено 2 агента, один на Zabbix сервере, второй на другой машине с ОС Debian
-![Hosts](https://github.com/DoctorZub/netology_homeworks/blob/main/img/zabbix_hosts.png)
 
-Log file agent on Zabbix server
-![server_log](https://github.com/DoctorZub/netology_homeworks/blob/main/img/log_agent_server.png)
+Разработайте план для выполнения горизонтального и вертикального шаринга базы данных. База данных состоит из трёх таблиц:
+- пользователи,<br>
+- книги,<br>
+- магазины (столбцы произвольно).<br>
+Опишите принципы построения системы и их разграничение или разбивку между базами данных.
 
-Log file agent on Debian VM
-![server_log](https://github.com/DoctorZub/netology_homeworks/blob/main/img/log_agent_debian.png)
 
-Раздел Monitoring -> Latest Data, видно что данные поступают от обоих агентов
-![Latest_data](https://github.com/DoctorZub/netology_homeworks/blob/main/img/monitoring_data.png)
+### Решение 2
 
----
+**1. Вертикальный шардинг**<br>
+Разделение таблиц по типам данных:
+- Пользователи — на одном сервере.
+- Книги — на другом.
+- Магазины — на третьем.<br>
+Это обеспечивает оптимизацию по типам запросов и нагрузке.
+
+Принципы построения системы:
+- Вертикальный шаринг используется для разделения по функциональности, чтобы оптимизировать работу с разными типами данных.
+- Использование репликации для обеспечения отказоустойчивости и балансировки нагрузки.
+
+
+**2. Горизонтальный шардинг**<br>
+- Разделение таблиц по диапазонам или ключам (например, по регионам или первым буквам имени пользователя).
+- Каждая часть хранится на отдельном сервере (шард).
+- Обеспечивает масштабируемость по объему данных и нагрузке.
+
+Принципы построения системы:
+- Горизонтальный шаринг используется для таблиц с большим объемом данных и высокой нагрузкой на чтение/запись.
+
+
+# Блок-схема вертикального шардинга:
+![Vertical](https://github.com/DoctorZub/netology_homeworks/blob/main/img/sharding_1.png)
+
+# Блок-схема горизонтального шардинга:
+- Таблица users разделена на 2 шарда по первой букве никнейма: от A до N, и от O до Z
+- Таблицы books и store разделены по id: 0-1000, 1001-2000, 2001-3000 и т.д
+![Vertical](https://github.com/DoctorZub/netology_homeworks/blob/main/img/sharding_2.png)
+
+
