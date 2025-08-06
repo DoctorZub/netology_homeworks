@@ -1,58 +1,73 @@
-# Домашнее задание к занятию "ELK" - `Zubkov Danil`
+# Домашнее задание к занятию "Резервное копирование баз данных" - `Zubkov Danil`
 
 ### Задание 1
-Установите и запустите Elasticsearch, после чего поменяйте параметр cluster_name на случайный.<br>
-Приведите скриншот команды 'curl -X GET 'localhost:9200/_cluster/health?pretty', сделанной на сервере с установленным Elasticsearch. Где будет виден нестандартный cluster_name.
+Кейс
+Финансовая компания решила увеличить надёжность работы баз данных и их резервного копирования.
+
+Необходимо описать, какие варианты резервного копирования подходят в случаях:
+
+1.1. Необходимо восстанавливать данные в полном объёме за предыдущий день.
+
+1.2. Необходимо восстанавливать данные за час до предполагаемой поломки.
 
 ### Решение 1
+1.1. В данном случае можно использовать классический вариант с полным резервным копированием раз в день - это значительно увеличит надежность БД.<br>
+Но также можно комбинировать использование full backup и incremental backup(например в начале недели делать полный бэкап, а каждый следующий день использовать инкрементное резервное копирование) - это увелит как надежность, так и скорость резервного копирования.
 
-Параметр cluster_name изменил в файле elasticsearch.yml на "Elasticsearch-Zubkov_Danil_Netology_2025"
+1.2. В случае, когда "*необходимо восстанавливать данные за час до предполагаемой поломки*", необходимо делать backup каждый час.
+- Конечно можно использовать full backup каждый час, но в данном случае это будет не совсем удобно и практично, если БД большая.
+- Можно также использовать вариант с комбинацией full backup и incremental backup - делать полный бэкап раз в день, а каждый час использовать инкрементное резервное копирование.
 
-![Elastic_terminal](https://github.com/DoctorZub/netology_homeworks/blob/main/img/elk_terminal.png)
-
----
 
 ### Задание 2
-Установите и запустите Kibana.
-
-Приведите скриншот интерфейса Kibana на странице http://<ip вашего сервера>:5601/app/dev_tools#/console, где будет выполнен запрос GET /_cluster/health?pretty.
+2.1. С помощью официальной документации приведите пример команды резервирования данных и восстановления БД (pgdump/pgrestore).
 
 ### Решение 2
 
-Я разворачивал стек ELK в Docker.<br>
-Файл [docker-compose](https://github.com/DoctorZub/netology_homeworks/blob/main/ELK/docker-compose.yml) для данного задания.
+Команда резервирования данных:
+```
+pg_dump имя_базы > файл_дампа
+```
+Также при необходимости можно искользовать параметры:
 
-![Kibana](https://github.com/DoctorZub/netology_homeworks/blob/main/img/elk_kibana.png)
+-U - указать имя пользователя, если БД принадлежит другому пользователю<br>
+-n, -t - можно указать название схемы или таблицы, резервную копию которой мы хотим сделать<br>
+-Fc - использование другого формата дампа<br>
 
----
+Команда восстановления БД:
+```
+psql -X имя_базы < файл_дампа
+```
+
 
 ### Задание 3
-Установите и запустите Logstash и Nginx. С помощью Logstash отправьте access-лог Nginx в Elasticsearch.
-
-Приведите скриншот интерфейса Kibana, на котором видны логи Nginx.
+С помощью официальной документации приведите пример команды инкрементного резервного копирования базы данных MySQL.
 
 ### Решение 3
+В MySQL нет встроенной команды для инкрементного резервного копирования, как в некоторых других системах. Обычно для этого используют инструменты, такие как:
+- mysqldump
+- mysqlbackup<br>
 
-(Nginx у меня не в docker-контейнере, а просто установлен на сервере)<br>
-Для выполнения этого задания настроил конфиг Nginx таким образом, чтобы логи писались в файл access.log в директорию, где лежит [docker-compose](https://github.com/DoctorZub/netology_homeworks/blob/main/ELK/docker-compose-nginx.yml) и [pipeline](https://github.com/DoctorZub/netology_homeworks/blob/main/ELK/configs/logstash/pipelines/logs_nginx.conf) для logstash.
+**С использованием mysqldump**<br>
+Для полного резервного копирования используется команда:
+```
+mysqldump -u [user] -p --all-databases > full_backup.sql
+```
+Для инкрементного резервного копирования обычно используют бинарные логи. Например, чтобы сделать инкрементный бэкап, сначала включают бинарные логи, а затем копируют только новые транзакции, записанные после последнего бэкапа.<br>
+Пример команды для копирования бинарных логов (после полного бэкапа):
+```
+mysqlbinlog --read-from-remote-server --stop-position=[position] mysql-bin.000001 > incremental_backup.sql
+```
 
-Этот файл с логами прокидывается в контейнер logstash, logstash читает его и пересылает данные в elasticsearch.<br>
-Для проверки подключился к серверу Nginx с разных браузеров, результаты обработки логов можно наблюдать в Kibana.
 
-![Nginx_kibana](https://github.com/DoctorZub/netology_homeworks/blob/main/img/elk_ngnix_logs.png)
-
----
-
-### Задание 4
-Установите и запустите Filebeat. Переключите поставку логов Nginx с Logstash на Filebeat.
-
-Приведите скриншот интерфейса Kibana, на котором видны логи Nginx, которые были отправлены через Filebeat.
-
-### Решение 4
-
-[Docker-compose](https://github.com/DoctorZub/netology_homeworks/blob/main/ELK/docker-compose_fb.yml)<br>
-[Pipeline_for_logstash](https://github.com/DoctorZub/netology_homeworks/blob/main/ELK/configs/logstash/pipelines/beat_nginx.conf)<br>
-[filebeat.yml](https://github.com/DoctorZub/netology_homeworks/blob/main/ELK/configs/filebeat/filebeat.yml)
-
-![Nginx_kibana_fb](https://github.com/DoctorZub/netology_homeworks/blob/main/img/elk_ngnix_logs_fb.png)
-![Nginx_kibana_fb_close](https://github.com/DoctorZub/netology_homeworks/blob/main/img/elk_ngnix_logs_fb_close.png)
+**С использованием mysqlbackup**<br>
+В MySQL Enterprise версии инкрементное резервное копирование можно реализовать с помощью встроенных утилит и функций.<br>
+Например:
+```
+mysqlbackup --defaults-file=/home/dbadmin/my.cnf \
+  --incremental --incremental-base=history:last_backup \
+  --backup-dir=/home/dbadmin/temp_dir \
+  --backup-image=incremental_image1.bi \
+   backup-to-image
+```
+Используется опция --incremental-base=history:last_backup , с помощью которой mysqlbackup извлекает LSN последней успешной (не TTS) полной или частичной резервной копии из таблицы mysql.backup_history и на его основе выполняет инкрементное резервное копирование.
