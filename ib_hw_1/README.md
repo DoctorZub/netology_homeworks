@@ -1,37 +1,123 @@
-# Домашнее задание к занятию "Резервное копирование" - `Zubkov Danil`
+# Домашнее задание к занятию "Уязвимости и атаки на информационные системы" - `Zubkov Danil`
 
 ### Задание 1
 
-Команда rsync, которая будет создавать зеркальную копию домашней директории пользователя в директорию /tmp/backup, исключающая из синхронизации все директории, начинающиеся с точки, и подсчитывающая хэш-суммы для всех файлов - выглядит следующим образом:
+Скачайте и установите виртуальную машину Metasploitable: https://sourceforge.net/projects/metasploitable/.
 
-![Rsync_1](https://github.com/DoctorZub/netology_homeworks/blob/main/img/rsync_1.png)
-![Rsync_2](https://github.com/DoctorZub/netology_homeworks/blob/main/img/rsync_2.png)
+Это типовая ОС для экспериментов в области информационной безопасности, с которой следует начать при анализе уязвимостей.
 
-Можно проверить работу команды - убедимся, что в домашней директории пользователя имеются скрытые файлы:
+Просканируйте эту виртуальную машину, используя nmap.
 
-![Hidden](https://github.com/DoctorZub/netology_homeworks/blob/main/img/skrit.png)
+Попробуйте найти уязвимости, которым подвержена эта виртуальная машина.
 
-А в созданной резервной копии такие файлы отсутствуют:
+Сами уязвимости можно поискать на сайте https://www.exploit-db.com/.
 
-![Not_hidden](https://github.com/DoctorZub/netology_homeworks/blob/main/img/net_skrit.png)
+Для этого нужно в поиске ввести название сетевой службы, обнаруженной на атакуемой машине, и выбрать подходящие по версии уязвимости.
+
+Ответьте на следующие вопросы:
+
+- Какие сетевые службы в ней разрешены?
+- Какие уязвимости были вами обнаружены? (список со ссылками: достаточно трёх уязвимостей)
+
+### Решение 1
+Были скачаны и установлены 2 виртуальные машины - Kali Linux и Metasploitable 2.<br>
+Машины подключены к одной локальной сети 10.0.0.0/8.<br>
+IP Kali Linux - 10.0.0.10<br>
+IP Metasploitable - 10.0.0.30<br>
+![Kali](https://github.com/DoctorZub/netology_homeworks/blob/main/img/kali_ip.png)
+![Meta](https://github.com/DoctorZub/netology_homeworks/blob/main/img/meta_ip.png)
+
+С помощью команды nmap было проведено сканирование портов и сетевых служб на Metasploitable.
+
+![Kali_nmap](https://github.com/DoctorZub/netology_homeworks/blob/main/img/kali_nmap.png)
+
+На ресурсе https://www.exploit-db.com/ были найдены следующие уязвимости для отсканированных сетевых служб:
+- Для Open SSH - https://www.exploit-db.com/exploits/45233, https://www.exploit-db.com/exploits/40963
+- Для ProFTPD https://www.exploit-db.com/exploits/15449
+- Для PostgreSQL https://www.exploit-db.com/exploits/32849
 
 ---
 
 ### Задание 2
 
-Скрипт, который будет создавать зеркальную резервную копию домашней директории пользователя и писать сообщения в системный лог - [rsync.sh](https://github.com/DoctorZub/netology_homeworks/blob/main/rsync_hw/rsync.sh)
+Проведите сканирование Metasploitable в режимах SYN, FIN, Xmas, UDP.
 
-Настройка cron производилась с помощью команды *sudo crontab -e*, чтобы запланированные задачи выполнялись от имени root'a и имелся доступ к системному логу. Файл с задачами cron - [crontab](https://github.com/DoctorZub/netology_homeworks/blob/main/rsync_hw/crontab)
-Задача в данном файле запускается каждый день в 19:37 и вызывает скрипт rsync.sh
+Запишите сеансы сканирования в Wireshark.
 
-Демонстрация работы:
+Ответьте на следующие вопросы:
 
-Созданная резервная копия по адресу /tmp/backup в 19:37:
+- Чем отличаются эти режимы сканирования с точки зрения сетевого трафика?
+- Как отвечает сервер?
 
-![Созданная копия](https://github.com/DoctorZub/netology_homeworks/blob/main/img/cron_script.png)
+### Решение 2
 
-Сообщение в системном логе:
+#### **Сканирование в режиме SYN**
 
-![Лог](https://github.com/DoctorZub/netology_homeworks/blob/main/img/cron_log.png)
+![Kali_syn](https://github.com/DoctorZub/netology_homeworks/blob/main/img/kali_syn.png)
+
+Рассмотрим в Wireshark отправлененые и полученные пакеты для открытого и закрытого портов.<br>
+Для открытого порта 22:
+
+![Syn-22](https://github.com/DoctorZub/netology_homeworks/blob/main/img/syn_22.png)
+
+Для закрытого порта 19:
+
+![Syn-19](https://github.com/DoctorZub/netology_homeworks/blob/main/img/syn_19.png)
+
+<ins>В режиме SYN nmap оправляет на порты сканируемого хоста TCP запросы с флагом SYN. Если в ответ nmap получает TCP ответ с флагами SYN, ACK, то делается вывод о том что порт открыт и отправляется TCP пакет с флагом RST для закрытия соединения. Если же ответом приходит TCP пакет с флагом RST, то nmap делает вывод о том, что данный порт закрыт.</ins>
 
 ---
+
+#### **Сканирование в режиме FIN**
+
+![Kali_fin](https://github.com/DoctorZub/netology_homeworks/blob/main/img/kali_fin.png)
+
+Рассмотрим в Wireshark отправлененые и полученные пакеты для открытого и закрытого портов.<br>
+Для открытого порта 22:
+
+![FIN-22](https://github.com/DoctorZub/netology_homeworks/blob/main/img/fin_22.png)
+
+Для закрытого порта 19:
+
+![FIN-19](https://github.com/DoctorZub/netology_homeworks/blob/main/img/fin_19.png)
+
+<ins>В режиме FIN nmap оправляет на порты сканируемого хоста TCP запросы с флагом FIN. Если в ответ nmap не получает TCP-пакеты, то делается вывод о том что порт открыт. Если же ответом приходит TCP пакет с флагами RST, ACK то nmap делает вывод о том, что данный порт закрыт.</ins>
+
+---
+
+#### **Сканирование в режиме Xmas**
+
+![Kali_Xmas](https://github.com/DoctorZub/netology_homeworks/blob/main/img/kali_X.png)
+
+Рассмотрим в Wireshark отправлененые и полученные пакеты для открытого и закрытого портов.<br>
+Для открытого порта 22:
+
+![X-22](https://github.com/DoctorZub/netology_homeworks/blob/main/img/X_22.png)
+
+Для закрытого порта 19:
+
+![X-19](https://github.com/DoctorZub/netology_homeworks/blob/main/img/X_19.png)
+
+<ins> Логика работы nmap в данном режиме сканирования похожа на режим сканирования FIN - nmap оправляет на порты сканируемого хоста TCP запросы с флагами FIN, PSH, URG. Если в ответ nmap не получает TCP-пакеты, то делается вывод о том что порт открыт. Если же ответом приходит TCP пакет с флагами RST, ACK то nmap делает вывод о том, что данный порт закрыт.</ins>
+
+---
+
+#### **Сканирование в режиме UDP**
+
+![Kali_UDP](https://github.com/DoctorZub/netology_homeworks/blob/main/img/kali_UDP.png)
+
+Рассмотрим в Wireshark отправлененые и полученные пакеты для открытого и закрытого портов.<br>
+Для открытого порта 53 (DNS):
+
+![UDP-53](https://github.com/DoctorZub/netology_homeworks/blob/main/img/udp_53.png)
+
+Для открытого порта 111 (TFTP):
+
+![UDP-111](https://github.com/DoctorZub/netology_homeworks/blob/main/img/udp_111.png)
+
+Для закрытого порта 22:
+
+![UDP-22](https://github.com/DoctorZub/netology_homeworks/blob/main/img/udp_22.png)
+
+<ins> Отметим, что данный режим сканирования является очень медленным, потому что nmap отправляет на порты сканируемого хоста множество UDP запросов популярных прикладных протоколов работающих на UDP. Если в ответ на какой нибудь из UDP запросов приходит ответ, то делается вывод об открытости порта. В противном случае - о том, что порт закрыт.</ins>
+
