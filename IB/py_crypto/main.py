@@ -50,7 +50,7 @@ def brute_force_aes(encrypted_text, max_attempts=999):
         except Exception as e:
             # Если расшифровка не удалась - продолжаем перебор
             if i % 100 == 0:
-                print(f"Попытка {i:03d}: {password} - неудача")
+                print(f"Попытка {password} - неудача")
     
     print("Атака не удалась - пароль не найден")
     return None
